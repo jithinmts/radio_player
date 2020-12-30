@@ -7,13 +7,14 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
+/// Plays a radio stream using AVPlayer for iOS and MediaPlayer for Android.
+/// Supports the playback state and metadata stream.
 class RadioPlayer {
-  final String streamTitle;
-  final String streamCover;
-  final String streamURL;
   static const MethodChannel _channel = const MethodChannel('radio_player');
 
-  RadioPlayer(this.streamTitle, this.streamCover, this.streamURL);
+  Future<void> init(String streamTitle, String streamURL) async {
+    await _channel.invokeMethod('init');
+  }
 
   Future<void> play() async {
     await _channel.invokeMethod('play');
