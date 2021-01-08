@@ -38,13 +38,15 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         const val NOTIFICATION_ID = 1
         const val STREAM_TITLE = "stream_title"
         const val STREAM_URL = "stream_url"
-        const val BROADCAST_STATE = "broadcast_state"
-        const val BROADCAST_STATE_EXTRA = "state"
+        const val ACTION_STATE_CHANGED = "state_changed"
+        const val ACTION_STATE_CHANGED_EXTRA = "state"
+        const val ACTION_NEW_METADATA = "matadata_changed"
+        const val ACTION_NEW_METADATA_EXTRA = "matadata"
     }
 
     private lateinit var playerNotificationManager: PlayerNotificationManager
     private var isForegroundService = false
-    private var metadataMap: List<String>? = null
+    private var metadataList: MutableList<String>? = null
     private var localBinder = LocalBinder()
     private var isPlaying = false
     private val player: SimpleExoPlayer by lazy {
@@ -137,10 +139,10 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 return null 
             }
             override fun getCurrentContentTitle(player: Player): String {
-                return if (metadataMap != null) metadataMap!!.get(1) else streamTitle
+                return metadataList?.get(0) ?: streamTitle
             }
             override fun getCurrentContentText(player: Player): String? {
-                return if (metadataMap != null) metadataMap!!.get(2) else null
+                return metadataList?.get(1) ?: null
             }
         }
 
@@ -178,8 +180,8 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
 
         // Notify the client if the playback state was changed by a notification or something
         if (isPlaying != playWhenReady) {
-            val stateIntent = Intent(BROADCAST_STATE)
-            stateIntent.putExtra(BROADCAST_STATE_EXTRA, playWhenReady)
+            val stateIntent = Intent(ACTION_STATE_CHANGED)
+            stateIntent.putExtra(ACTION_STATE_CHANGED_EXTRA, playWhenReady)
             localBroadcastManager.sendBroadcast(stateIntent)
             isPlaying = playWhenReady
         }
@@ -188,15 +190,13 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     override fun onMetadata(metadata: Metadata) {
         val icyInfo: IcyInfo = metadata[0] as IcyInfo
         val title: String = icyInfo.title ?: return
-        var artist: String = title
-        var track: String = ""
 
-        if (title.contains(" - ")) {
-            artist = title.substringBefore(" - ")
-            track = title.substringAfter(" - ")
-        }
-
-        metadataMap = listOf<String>(title, artist, track)
+        metadataList = title.split(" - ").toMutableList()
+        metadataList!!.add("")
         playerNotificationManager.invalidate()
+
+        val metadataIntent = Intent(ACTION_NEW_METADATA)
+        metadataIntent.putStringArrayListExtra(ACTION_NEW_METADATA_EXTRA, metadataList!! as ArrayList<String>)
+        localBroadcastManager.sendBroadcast(metadataIntent)
     }
 }
