@@ -48,7 +48,6 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     private var isForegroundService = false
     private var metadataList: MutableList<String>? = null
     private var localBinder = LocalBinder()
-    private var isPlaying = false
     private val player: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(this).build()
     }
@@ -57,12 +56,10 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     }
 
     fun play() {
-        isPlaying = true
         player.playWhenReady = true
     }
 
     fun pause() {
-        isPlaying = false
         player.playWhenReady = false
     }
 
@@ -178,13 +175,10 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
             player.prepare()
         }
 
-        // Notify the client if the playback state was changed by a notification or something
-        if (isPlaying != playWhenReady) {
-            val stateIntent = Intent(ACTION_STATE_CHANGED)
-            stateIntent.putExtra(ACTION_STATE_CHANGED_EXTRA, playWhenReady)
-            localBroadcastManager.sendBroadcast(stateIntent)
-            isPlaying = playWhenReady
-        }
+        // Notify the client if the playback state was changed
+        val stateIntent = Intent(ACTION_STATE_CHANGED)
+        stateIntent.putExtra(ACTION_STATE_CHANGED_EXTRA, playWhenReady)
+        localBroadcastManager.sendBroadcast(stateIntent)
     }
 
     override fun onMetadata(metadata: Metadata) {
