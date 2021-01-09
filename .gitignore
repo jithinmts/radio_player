@@ -1,6 +1,11 @@
-.DS_Store
 .vscode/
 .idea/
 ios/build/
 **.xcworkspace/
 *.iml
+
+.DS_Store
+.dart_tool/
+.packages
+.pub/
+build/
