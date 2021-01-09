@@ -7,13 +7,16 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-/// Plays a radio stream using AVPlayer for iOS and ExoPlayer for Android.
-/// Supports the playback state and metadata stream.
 class RadioPlayer {
-  static const MethodChannel _channel = MethodChannel('radio_player');
+  static const _channel = MethodChannel('radio_player');
+  static const _metadataEvents = EventChannel('radio_player/metadataEvents');
+  static const _stateEvents = EventChannel('radio_player/stateEvents');
 
-  RadioPlayer(String streamTitle, String streamUrl) {
-    _channel.invokeMethod('init', <dynamic>[streamTitle, streamUrl]);
+  Stream<bool>? _stateStream;
+  Stream<List<String>>? _metadataStream;
+
+  Future<void> init(String title, String url) async {
+    await _channel.invokeMethod('init', <dynamic>[title, url]);
   }
 
   Future<void> play() async {
@@ -22,5 +25,23 @@ class RadioPlayer {
 
   Future<void> pause() async {
     await _channel.invokeMethod('pause');
+  }
+
+  /// Get the playback state stream.
+  Stream<bool> get stateStream {
+    _stateStream ??=
+        _stateEvents.receiveBroadcastStream().map<bool>((value) => value);
+
+    return _stateStream!;
+  }
+
+  /// Get the metadata stream.
+  Stream<List<String>> get metadataStream {
+    _metadataStream ??=
+        _metadataEvents.receiveBroadcastStream().map((metadata) {
+      return metadata.map<String>((value) => value as String).toList();
+    });
+
+    return _metadataStream!;
   }
 }
