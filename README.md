@@ -1,3 +1,3 @@
 # radio_player
 
-A flutter plugin to play streaming audio content.
+A Flutter plugin to play streaming audio content.

@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+//      _platformVersion = platformVersion;
     });
   }
 
