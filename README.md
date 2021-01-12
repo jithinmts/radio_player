@@ -15,7 +15,7 @@ dependencies:
   radio_player: ^0.0.1
 ```
 
-Only for debug mode in iOS 14 or later add the following to info.plist
+To launch in debug mode in iOS 14+ add the following to info.plist
 
 ```
 <key>NSBonjourServices</key>
