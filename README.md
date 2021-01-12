@@ -15,9 +15,9 @@ dependencies:
   radio_player: ^0.0.1
 ```
 
-To launch in debug mode in iOS 14+ add the following to info.plist
+iOS 14+ in debug mode requires the following in info.plist
 
-```
+```xml
 <key>NSBonjourServices</key>
 <array>
 <string>_dartobservatory._tcp</string>
