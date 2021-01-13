@@ -25,7 +25,7 @@ By default iOS forbids loading from non-https url. To cancel this restriction ed
 </dict>
 ```
 
-If necessary, add permissions to play in the background.
+If necessary, add permissions to play in the background:
 
 ```xml
 <key>UIBackgroundModes</key>
@@ -46,7 +46,7 @@ Only for debug mode in iOS 14+, you will also need the following:
 
 ## Usage
 
-An `RadioPlayer` instance can play a single audio at a time. To create it, simply call the constructor:
+Instantiate an `RadioPlayer` instance
 
 ```dart
 RadioPlayer radioPlayer = RadioPlayer();
