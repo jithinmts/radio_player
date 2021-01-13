@@ -15,7 +15,7 @@ dependencies:
   radio_player: ^0.0.1
 ```
 
-iOS 14+ in debug mode requires the following in info.plist
+iOS 14+ in debug mode requires the following in `info.plist`
 
 ```xml
 <key>NSBonjourServices</key>
