@@ -46,13 +46,13 @@ Only for debug mode in iOS 14+, you will also need the following:
 
 ## Usage
 
-To create `RadioPlayer` instance, simply call the constructor:
+To create `RadioPlayer` instance, simply call the constructor.
 
 ```dart
 RadioPlayer radioPlayer = RadioPlayer();
 ```
 
-Initialize it with your data:
+Initialize it with your data.
 
 ```dart
 radioPlayer.init(STREAM_TITLE, STREAM_URL);
