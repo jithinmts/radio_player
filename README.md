@@ -44,13 +44,43 @@ Only for debug mode in iOS 14+, you will also need the following:
 </array>
 ```
 
-## Example
+## Usage
 
 ```dart
-import 'package:flutter/material.dart';
 import 'package:radio_player/radio_player.dart';
+//...
+RadioPlayer _radioPlayer = RadioPlayer();
+//...
+radioPlayer.init(STREAM_TITLE, STREAM_URL);
+```
 
-...
+### Player Controls 
+
+```dart
+radioPlayer.play();
+radioPlayer.pause();
+```
+
+### State Event
+
+You can use it to show if player playing or paused.
+
+```dart
+bool isPlaying = false;
+//...
+radioPlayer.stateStream.listen((value) {
+    setState(() { isPlaying = value; });
+});
+```
+
+### Metadata Event
+
+```dart
+List<String>? metadata;
+//...
+radioPlayer.metadataStream.listen((value) {
+    setState(() { metadata = value; });
+});
 ```
 
 ## Contributing
