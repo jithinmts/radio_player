@@ -15,7 +15,7 @@ dependencies:
   radio_player: ^0.0.1
 ```
 
-By default iOS forbids loading from non-https url. To cancel this restriction edit your .plist and add :
+By default iOS forbids loading from non-https url. To cancel this restriction edit your .plist and add:
 
 ```xml
 <key>NSAppTransportSecurity</key>
@@ -25,7 +25,17 @@ By default iOS forbids loading from non-https url. To cancel this restriction ed
 </dict>
 ```
 
-For debug mode in iOS 14+, you will also need the following:
+If necessary, add permission to play in the background:
+
+```xml
+<key>UIBackgroundModes</key>
+<array>
+    <string>audio</string>
+    <string>processing</string>
+</array>
+```
+
+Only for debug mode in iOS 14+, you will also need the following:
 
 ```xml
 <key>NSBonjourServices</key>
