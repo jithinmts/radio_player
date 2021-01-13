@@ -15,7 +15,17 @@ dependencies:
   radio_player: ^0.0.1
 ```
 
-iOS 14+ in debug mode requires the following in `info.plist`
+By default iOS forbids loading from non-https url. To cancel this restriction edit your .plist and add :
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+```
+
+For debug mode in iOS 14+, you will also need the following:
 
 ```xml
 <key>NSBonjourServices</key>
