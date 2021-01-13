@@ -46,11 +46,13 @@ Only for debug mode in iOS 14+, you will also need the following:
 
 ## Usage
 
+An `RadioPlayer` instance can play a single audio at a time. To create it, simply call the constructor:
+
 ```dart
-import 'package:radio_player/radio_player.dart';
-//...
 RadioPlayer _radioPlayer = RadioPlayer();
-//...
+```
+
+```dart
 radioPlayer.init(STREAM_TITLE, STREAM_URL);
 ```
 
@@ -74,6 +76,8 @@ radioPlayer.stateStream.listen((value) {
 ```
 
 ### Metadata Event
+
+This Event returns the current metadata.
 
 ```dart
 List<String>? metadata;
