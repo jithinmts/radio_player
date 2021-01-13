@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:radio_player/radio_player.dart';
 
 void main() {
@@ -14,31 +11,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  RadioPlayer _radioPlayer = RadioPlayer();
+  bool isPlaying = false;
+  List<String>? metadata;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    initRadioPlayer();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      //platformVersion = await RadioPlayer.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+  void initRadioPlayer() {
+    _radioPlayer.init('Radio Player', 'https://myradio24.org/2288.m3u');
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+    _radioPlayer.stateStream.listen((value) {
+      setState(() {
+        isPlaying = value;
+      });
+    });
 
-    setState(() {
-//      _platformVersion = platformVersion;
+    _radioPlayer.metadataStream.listen((value) {
+      setState(() {
+        metadata = value;
+      });
     });
   }
 
@@ -47,10 +42,35 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Radio Player'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                metadata?[0] ?? 'Metadata',
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              Text(
+                metadata?[1] ?? '',
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            isPlaying ? _radioPlayer.pause() : _radioPlayer.play();
+          },
+          tooltip: 'Increment',
+          child: Icon(
+            isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+          ),
         ),
       ),
     );
