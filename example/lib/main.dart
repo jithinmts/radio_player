@@ -1,3 +1,10 @@
+
+/*
+ *  main.dart
+ *
+ *  Created by Ilya Chirkunov <xc@yar.net> on 28.12.2020.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:radio_player/radio_player.dart';
 
