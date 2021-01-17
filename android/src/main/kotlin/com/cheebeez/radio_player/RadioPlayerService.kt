@@ -170,7 +170,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 }
     }
 
-	override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_IDLE) {
             player.prepare()
         }
