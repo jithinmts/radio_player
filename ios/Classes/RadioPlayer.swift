@@ -37,6 +37,7 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     }
 
     func runInBackground(_ title: String) {
+        try? AVAudioSession.sharedInstance().setActive(true)
         try? AVAudioSession.sharedInstance().setCategory(.playback)
 
         // Control buttons on the lock screen.
