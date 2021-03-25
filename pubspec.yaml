@@ -1,6 +1,6 @@
 name: radio_player
-description: A flutter plugin to play streaming audio content.
-version: 0.0.1
+description: A flutter plugin to play streaming audio content. Compatible with Android 6.0+ and iOS 10.0+.
+version: 0.0.2
 author: Ilya Chirkunov <xc@yar.net>
 homepage: https://github.com/cheebeez/radio_player
 
