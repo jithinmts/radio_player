@@ -1,6 +1,6 @@
 # Radio Player
 
-A Flutter plugin to play streaming audio content. This plugin works for Android 6.0+ and iOS 10.0+.
+A Flutter plugin to play streaming audio content. Compatible with Android 6.0+ and iOS 10.0+.
 
 [![flutter platform](https://img.shields.io/badge/Platform-Flutter-yellow.svg)](https://flutter.io)
 [![pub package](https://img.shields.io/pub/v/radio_player.svg)](https://pub.dartlang.org/packages/radio_player)
