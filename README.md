@@ -1,6 +1,6 @@
 # Radio Player
 
-A Flutter plugin to play streaming audio content with support most popular streaming formats.
+A Flutter plugin to play streaming audio content with background support and lock screen controls.
 
 [![flutter platform](https://img.shields.io/badge/Platform-Flutter-yellow.svg)](https://flutter.io)
 [![pub package](https://img.shields.io/pub/v/radio_player.svg)](https://pub.dartlang.org/packages/radio_player)
