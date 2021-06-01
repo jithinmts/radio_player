@@ -8,7 +8,7 @@ import Flutter
 import UIKit
 
 public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
-    private var player: RadioPlayer?
+    private var player = RadioPlayer()
     public static var stateEventSink: FlutterEventSink?
     public static var metadataEventSink: FlutterEventSink?
 
@@ -27,15 +27,15 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
         let args = call.arguments as? Array<Any>
 
         switch call.method {
-            case "init":
+            case "set":
                 guard let args = args else {
                     return
                 }
-                player = RadioPlayer(title: args[0] as! String, url: args[1] as! String)
+                player.setMediaItem(args[0] as! String, args[1] as! String)
             case "play":
-                player?.play()
+                player.play()
             case "pause":
-                player?.pause()
+                player.pause()
             default:
                 result(FlutterMethodNotImplemented)
         }

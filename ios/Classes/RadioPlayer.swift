@@ -12,15 +12,18 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     private var playerItem: AVPlayerItem!
     private var metadata: Array<String>!
 
-    init(title: String, url: String) {
-        super.init()
-        let url = URL(string: url)! 
+    func setMediaItem(_ streamTitle: String, _ streamUrl: String) {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: streamTitle, ]
+        playerItem = AVPlayerItem(url: URL(string: streamUrl)!)
 
-        // Create an AVPlayer.
-        playerItem = AVPlayerItem(url: url)
-        player = AVPlayer(playerItem: playerItem)
-        player.addObserver(self, forKeyPath: #keyPath(AVPlayer.timeControlStatus), options: [.new], context: nil)
-        runInBackground(title)
+        if (player == nil) {
+            // Create an AVPlayer.
+            player = AVPlayer(playerItem: playerItem)
+            player.addObserver(self, forKeyPath: #keyPath(AVPlayer.timeControlStatus), options: [.new], context: nil)
+            runInBackground()
+        } else {
+            player.replaceCurrentItem(with: playerItem)
+        }
 
         // Set metadata handler.
         let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
@@ -36,13 +39,12 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         player.pause()
     }
 
-    func runInBackground(_ title: String) {
+    func runInBackground() {
         try? AVAudioSession.sharedInstance().setActive(true)
         try? AVAudioSession.sharedInstance().setCategory(.playback)
 
         // Control buttons on the lock screen.
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: title, ]
         let commandCenter = MPRemoteCommandCenter.shared()
 
         // Play button.

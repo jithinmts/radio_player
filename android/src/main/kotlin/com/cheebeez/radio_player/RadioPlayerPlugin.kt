@@ -45,6 +45,11 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         stateChannel.setStreamHandler(stateStreamHandler)
         metadataChannel = EventChannel(flutterPluginBinding.binaryMessenger, "radio_player/metadataEvents")
         metadataChannel.setStreamHandler(metadataStreamHandler)
+
+        // Start service
+        intent = Intent(context, RadioPlayerService::class.java)
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        Util.startForegroundService(context, intent)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -57,14 +62,8 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         val args = call.arguments<ArrayList<*>>()
 
         when (call.method) {
-            "init" -> {
-                intent = Intent(context, RadioPlayerService::class.java)
-                intent.apply {
-                    putExtra(RadioPlayerService.STREAM_TITLE, args[0] as String)
-                    putExtra(RadioPlayerService.STREAM_URL, args[1] as String)
-                }
-                context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-                Util.startForegroundService(context, intent)
+            "set" -> {
+                service.setMediaItem(args[0] as String, args[1] as String)
             }
             "play" -> {
                 service.play()

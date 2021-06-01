@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Simple channel changing.
+
 ## 0.0.4
 
 * Update description.

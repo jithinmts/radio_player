@@ -52,10 +52,10 @@ To create `RadioPlayer` instance, simply call the constructor.
 RadioPlayer radioPlayer = RadioPlayer();
 ```
 
-Initialize it with your data.
+Set it with your data.
 
 ```dart
-radioPlayer.init(STREAM_TITLE, STREAM_URL);
+radioPlayer.setMediaItem(STREAM_TITLE, STREAM_URL);
 ```
 
 ### Player Controls 

@@ -15,8 +15,8 @@ class RadioPlayer {
   Stream<bool>? _stateStream;
   Stream<List<String>>? _metadataStream;
 
-  Future<void> init(String title, String url) async {
-    await _channel.invokeMethod('init', <dynamic>[title, url]);
+  Future<void> setMediaItem(String title, String url) async {
+    await _channel.invokeMethod('set', <dynamic>[title, url]);
   }
 
   Future<void> play() async {

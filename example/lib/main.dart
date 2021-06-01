@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initRadioPlayer() {
-    _radioPlayer.init('Radio Player', 'https://myradio24.org/2288.m3u');
+    _radioPlayer.setMediaItem('Radio Player', 'https://myradio24.org/2288.m3u');
 
     _radioPlayer.stateStream.listen((value) {
       setState(() {
