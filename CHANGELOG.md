@@ -1,6 +1,10 @@
+## 0.2.0
+
+* Support metadata artwork.
+
 ## 0.1.1
 
-* Simple channel changing.
+* Support for audio stream change.
 
 ## 0.0.4
 

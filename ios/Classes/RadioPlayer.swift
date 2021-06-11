@@ -11,9 +11,11 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     private var player: AVPlayer!
     private var playerItem: AVPlayerItem!
     private var metadata: Array<String>!
+    var defaultArtwork: UIImage?
 
     func setMediaItem(_ streamTitle: String, _ streamUrl: String) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: streamTitle, ]
+        defaultArtwork = nil
         playerItem = AVPlayerItem(url: URL(string: streamUrl)!)
 
         if (player == nil) {
@@ -29,6 +31,13 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
         metaOutput.setDelegate(self, queue: DispatchQueue.main)
         playerItem.add(metaOutput)
+    }
+
+    func setArtwork(_ image: UIImage?) {
+        guard let image = image else { return }
+
+        let artwork = MPMediaItemArtwork(boundsSize: image.size) { (size) -> UIImage in image }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?.updateValue(artwork, forKey: MPMediaItemPropertyArtwork)
     }
 
     func play() {
@@ -80,16 +89,42 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
 
     func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup],
                 from track: AVPlayerItemTrack?) {
-        guard let title = groups.first?.items.first?.stringValue else {
-            return
-        }
+        let metaDataItems = groups.first.map({ $0.items })
 
+        // Parse title
+        guard let title = metaDataItems?.first?.stringValue else { return }
         metadata = title.components(separatedBy: " - ")
-        metadata.append("")
+        if (metadata.count == 1) { metadata.append("") }
 
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?.updateValue(metadata[0], forKey: MPMediaItemPropertyArtist)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?.updateValue(metadata[1], forKey: MPMediaItemPropertyTitle)
+        // Parse artwork
+        metaDataItems!.count > 1 ? metadata.append(metaDataItems![1].stringValue!) : metadata.append("")
 
+        // Update the now playing info
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+                MPMediaItemPropertyArtist: metadata[0], MPMediaItemPropertyTitle: metadata[1], ]
+
+        let metadataArtwork = downloadImage(metadata[2])
+        setArtwork(metadataArtwork ?? defaultArtwork)
+
+        // Send metadata to client
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "metadata"), object: nil, userInfo: ["metadata": metadata!])
+    }
+
+    func downloadImage(_ value: String) -> UIImage? {
+        guard let url = URL(string: value) else { return nil }
+
+        var result: UIImage?
+        let semaphore = DispatchSemaphore(value: 0)
+
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let data = data, error == nil { 
+                result = UIImage(data: data)
+            }
+            semaphore.signal()
+        }
+        task.resume()
+
+        semaphore.wait(timeout: .distantFuture)
+        return result
     }
 }

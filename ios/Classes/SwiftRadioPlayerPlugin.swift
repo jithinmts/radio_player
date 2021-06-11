@@ -8,30 +8,33 @@ import Flutter
 import UIKit
 
 public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
-    private var player = RadioPlayer()
-    public static var stateEventSink: FlutterEventSink?
-    public static var metadataEventSink: FlutterEventSink?
+    static let instance = SwiftRadioPlayerPlugin()
+    private let player = RadioPlayer()
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "radio_player", binaryMessenger: registrar.messenger())
-        let instance = SwiftRadioPlayerPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
 
-        let stateChannel = FlutterEventChannel.init(name: "radio_player/stateEvents", binaryMessenger: registrar.messenger())
+        let stateChannel = FlutterEventChannel(name: "radio_player/stateEvents", binaryMessenger: registrar.messenger())
         stateChannel.setStreamHandler(StateStreamHandler())
-        let metadataChannel = FlutterEventChannel.init(name: "radio_player/metadataEvents", binaryMessenger: registrar.messenger())
+        let metadataChannel = FlutterEventChannel(name: "radio_player/metadataEvents", binaryMessenger: registrar.messenger())
         metadataChannel.setStreamHandler(MetadataStreamHandler())
+
+        // Channel for default artwork
+        let defaultArtworkChannel = FlutterBasicMessageChannel(name: "radio_player/defaultArtwork", binaryMessenger: registrar.messenger(), codec: FlutterBinaryCodec())
+        defaultArtworkChannel.setMessageHandler { message, result in
+            let image = UIImage(data: message as! Data)
+            instance.player.defaultArtwork = image
+            instance.player.setArtwork(image)
+            result(nil)
+        }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        let args = call.arguments as? Array<Any>
-
         switch call.method {
             case "set":
-                guard let args = args else {
-                    return
-                }
-                player.setMediaItem(args[0] as! String, args[1] as! String)
+                let args = call.arguments as! Array<String>
+                player.setMediaItem(args[0], args[1])
             case "play":
                 player.play()
             case "pause":
@@ -39,6 +42,8 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
             default:
                 result(FlutterMethodNotImplemented)
         }
+
+        result(1)
     }
 }
 

@@ -46,6 +46,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     private var notificationTitle = ""
     private var isForegroundService = false
     private var metadataList: MutableList<String>? = null
+    private var defaultArtwork: Bitmap? = null
     private var localBinder = LocalBinder()
     private val player: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(this).build()
@@ -85,6 +86,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
             }
 
         metadataList = null
+        defaultArtwork = null
         notificationTitle = streamTitle
         playerNotificationManager?.invalidate() ?: createNotificationManager()
 
@@ -92,6 +94,11 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         player.clearMediaItems()
         player.seekTo(0)
         player.addMediaItems(mediaItems)
+    }
+
+    fun setArtwork(image: Bitmap) {
+        defaultArtwork = image
+        playerNotificationManager?.invalidate()
     }
 
     fun play() {
@@ -132,11 +139,9 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 return null
             }
             override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {
-                val resID = getResources().getIdentifier("ic_launcher", "mipmap", packageName)
-                //val bitmap = BitmapFactory.decodeResource(resources, resID)
-                //callback?.onBitmap(bitmap)
-                //return bitmap
-                return null
+                val metadataArtwork = downloadImage(metadataList?.get(2))
+                if (metadataArtwork != null) callback?.onBitmap(metadataArtwork)
+                return defaultArtwork
             }
             override fun getCurrentContentTitle(player: Player): String {
                 return metadataList?.get(0) ?: notificationTitle
@@ -187,13 +192,33 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     override fun onMetadata(metadata: Metadata) {
         val icyInfo: IcyInfo = metadata[0] as IcyInfo
         val title: String = icyInfo.title ?: return
+        val cover: String = icyInfo.url ?: ""
 
         metadataList = title.split(" - ").toMutableList()
-        metadataList!!.add("")
+        if (metadataList!!.lastIndex == 0) metadataList!!.add("")
+        metadataList!!.add(cover)
         playerNotificationManager?.invalidate()
 
         val metadataIntent = Intent(ACTION_NEW_METADATA)
         metadataIntent.putStringArrayListExtra(ACTION_NEW_METADATA_EXTRA, metadataList!! as ArrayList<String>)
         localBroadcastManager.sendBroadcast(metadataIntent)
+    }
+
+    fun downloadImage(value: String?): Bitmap? {
+        if (value == null) return null
+        var bitmap: Bitmap? = null
+
+        try {
+            val url: URL = URL(value)
+            bitmap = runBlocking { 
+                GlobalScope.async { 
+                    BitmapFactory.decodeStream(url.openStream())
+                }.await()
+            }
+        } catch (e: Throwable) {
+            println(e)
+        }
+
+        return bitmap
     }
 }

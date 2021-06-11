@@ -18,6 +18,9 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.EventChannel.StreamHandler
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.BinaryCodec
+import java.nio.ByteBuffer
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
@@ -26,6 +29,8 @@ import android.content.IntentFilter
 import android.content.BroadcastReceiver
 import android.os.IBinder
 import com.google.android.exoplayer2.util.Util
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
 /** RadioPlayerPlugin */
 class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
@@ -46,6 +51,16 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         metadataChannel = EventChannel(flutterPluginBinding.binaryMessenger, "radio_player/metadataEvents")
         metadataChannel.setStreamHandler(metadataStreamHandler)
 
+        // Channel for default artwork
+        val defaultArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/defaultArtwork", BinaryCodec.INSTANCE)
+        defaultArtworkChannel.setMessageHandler { message, result -> run {
+                val array = message!!.array();
+                val image = BitmapFactory.decodeByteArray(array, 0, array.size);
+                service.setArtwork(image)
+                result.reply(null)
+            }
+        }
+
         // Start service
         intent = Intent(context, RadioPlayerService::class.java)
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -59,11 +74,10 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        val args = call.arguments<ArrayList<*>>()
-
         when (call.method) {
             "set" -> {
-                service.setMediaItem(args[0] as String, args[1] as String)
+                val args = call.arguments<ArrayList<String>>()
+                service.setMediaItem(args[0], args[1])
             }
             "play" -> {
                 service.play()
@@ -75,6 +89,8 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
                 result.notImplemented()
             }
         }
+
+        result.success(1)
     }
 
     /** Defines callbacks for service binding, passed to bindService() */

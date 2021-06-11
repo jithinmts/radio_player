@@ -12,7 +12,7 @@ To use this package, add `radio_player` as a dependency in your `pubspec.yaml` f
 
 ```yaml
 dependencies:
-  radio_player: ^0.1.1
+  radio_player: ^0.2.0
 ```
 
 By default iOS forbids loading from non-https url. To cancel this restriction edit your .plist and add:
@@ -52,10 +52,10 @@ To create `RadioPlayer` instance, simply call the constructor.
 RadioPlayer radioPlayer = RadioPlayer();
 ```
 
-Set it with your data.
+Configure it with your data.
 
 ```dart
-radioPlayer.setMediaItem(STREAM_TITLE, STREAM_URL);
+radioPlayer.setMediaItem(STREAM_TITLE, STREAM_URL, DEFAULT_ARTWORK?);
 ```
 
 ### Player Controls 
