@@ -55,7 +55,7 @@ RadioPlayer radioPlayer = RadioPlayer();
 Configure it with your data.
 
 ```dart
-radioPlayer.setMediaItem(STREAM_TITLE, STREAM_URL, DEFAULT_ARTWORK?);
+radioPlayer.setMediaItem(TITLE, URL, IMAGE?);
 ```
 
 ### Player Controls 
