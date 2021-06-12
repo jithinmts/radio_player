@@ -21,12 +21,19 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
         metadataChannel.setStreamHandler(MetadataStreamHandler())
 
         // Channel for default artwork
-        let defaultArtworkChannel = FlutterBasicMessageChannel(name: "radio_player/defaultArtwork", binaryMessenger: registrar.messenger(), codec: FlutterBinaryCodec())
+        let defaultArtworkChannel = FlutterBasicMessageChannel(name: "radio_player/setArtwork", binaryMessenger: registrar.messenger(), codec: FlutterBinaryCodec())
         defaultArtworkChannel.setMessageHandler { message, result in
             let image = UIImage(data: message as! Data)
             instance.player.defaultArtwork = image
             instance.player.setArtwork(image)
             result(nil)
+        }
+
+        // Channel for metadata artwork
+        let metadataArtworkChannel = FlutterBasicMessageChannel(name: "radio_player/getArtwork", binaryMessenger: registrar.messenger(), codec: FlutterBinaryCodec())
+        metadataArtworkChannel.setMessageHandler { message, result in
+            let data = instance.player.metadataArtwork?.jpegData(compressionQuality: 1.0)
+            result(data)
         }
     }
 

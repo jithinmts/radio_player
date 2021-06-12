@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:radio_player/radio_player.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -28,7 +29,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initRadioPlayer() {
-    _radioPlayer.setMediaItem('Radio Player', 'https://myradio24.org/2288.m3u');
+    _radioPlayer.setMediaItem('Radio Player',
+        'http://stream-uk1.radioparadise.com/aac-320', 'assets/cover.jpg');
 
     _radioPlayer.stateStream.listen((value) {
       setState(() {
@@ -55,6 +57,29 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              FutureBuilder(
+                future: _radioPlayer.getMetadataArtwork(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  Image artwork;
+                  if (snapshot.hasData) {
+                    artwork = snapshot.data;
+                  } else {
+                    artwork = Image.asset(
+                      'assets/cover.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  }
+                  return Container(
+                    height: 180,
+                    width: 180,
+                    child: ClipRRect(
+                      child: artwork,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
               Text(
                 metadata?[0] ?? 'Metadata',
                 softWrap: false,
@@ -67,6 +92,7 @@ class _MyAppState extends State<MyApp> {
                 overflow: TextOverflow.fade,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),

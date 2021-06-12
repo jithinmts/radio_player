@@ -42,11 +42,12 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         const val ACTION_NEW_METADATA_EXTRA = "matadata"
     }
 
+    var metadataArtwork: Bitmap? = null
+    private var defaultArtwork: Bitmap? = null
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var notificationTitle = ""
     private var isForegroundService = false
     private var metadataList: MutableList<String>? = null
-    private var defaultArtwork: Bitmap? = null
     private var localBinder = LocalBinder()
     private val player: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(this).build()
@@ -87,6 +88,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
 
         metadataList = null
         defaultArtwork = null
+        metadataArtwork = null
         notificationTitle = streamTitle
         playerNotificationManager?.invalidate() ?: createNotificationManager()
 
@@ -96,7 +98,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         player.addMediaItems(mediaItems)
     }
 
-    fun setArtwork(image: Bitmap) {
+    fun setDefaultArtwork(image: Bitmap) {
         defaultArtwork = image
         playerNotificationManager?.invalidate()
     }
@@ -139,8 +141,8 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 return null
             }
             override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {
-                val metadataArtwork = downloadImage(metadataList?.get(2))
-                if (metadataArtwork != null) callback?.onBitmap(metadataArtwork)
+                metadataArtwork = downloadImage(metadataList?.get(2))
+                if (metadataArtwork != null) callback?.onBitmap(metadataArtwork!!)
                 return defaultArtwork
             }
             override fun getCurrentContentTitle(player: Player): String {

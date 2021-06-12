@@ -21,16 +21,17 @@ import io.flutter.plugin.common.EventChannel.StreamHandler
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryCodec
 import java.nio.ByteBuffer
+import java.io.ByteArrayOutputStream
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.ComponentName
 import android.content.IntentFilter
 import android.content.BroadcastReceiver
-import android.os.IBinder
-import com.google.android.exoplayer2.util.Util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.IBinder
+import com.google.android.exoplayer2.util.Util
 
 /** RadioPlayerPlugin */
 class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
@@ -52,12 +53,28 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         metadataChannel.setStreamHandler(metadataStreamHandler)
 
         // Channel for default artwork
-        val defaultArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/defaultArtwork", BinaryCodec.INSTANCE)
+        val defaultArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/setArtwork", BinaryCodec.INSTANCE)
         defaultArtworkChannel.setMessageHandler { message, result -> run {
                 val array = message!!.array();
                 val image = BitmapFactory.decodeByteArray(array, 0, array.size);
-                service.setArtwork(image)
+                service.setDefaultArtwork(image)
                 result.reply(null)
+            }
+        }
+
+        // Channel for metadata artwork
+        val metadataArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/getArtwork", BinaryCodec.INSTANCE)
+        metadataArtworkChannel.setMessageHandler { message, result -> run {
+                if (service.metadataArtwork == null) {
+                    result.reply(null)
+                } else {
+                    val stream = ByteArrayOutputStream()
+                    service.metadataArtwork!!.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    val array = stream.toByteArray();
+                    val byteBuffer = ByteBuffer.allocateDirect(array.size);
+                    byteBuffer.put(array)
+                    result.reply(byteBuffer)
+                }
             }
         }
 

@@ -12,10 +12,12 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     private var playerItem: AVPlayerItem!
     private var metadata: Array<String>!
     var defaultArtwork: UIImage?
+    var metadataArtwork: UIImage?
 
     func setMediaItem(_ streamTitle: String, _ streamUrl: String) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: streamTitle, ]
         defaultArtwork = nil
+        metadataArtwork = nil
         playerItem = AVPlayerItem(url: URL(string: streamUrl)!)
 
         if (player == nil) {
@@ -103,7 +105,7 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
                 MPMediaItemPropertyArtist: metadata[0], MPMediaItemPropertyTitle: metadata[1], ]
 
-        let metadataArtwork = downloadImage(metadata[2])
+        metadataArtwork = downloadImage(metadata[2])
         setArtwork(metadataArtwork ?? defaultArtwork)
 
         // Send metadata to client
