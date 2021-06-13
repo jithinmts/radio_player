@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Support Flutter 2.2.2.
+
 ## 0.2.0
 
 * Support metadata artwork.

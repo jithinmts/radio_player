@@ -43,7 +43,7 @@ class RadioPlayer {
 
   /// Get artwork from metadata
   Future<Image?> getMetadataArtwork() async {
-    final byteData = await _metadataArtworkChannel.send(null);
+    final byteData = await _metadataArtworkChannel.send(ByteData(0));
     if (byteData == null) return null;
 
     return Image.memory(byteData.buffer.asUint8List(), fit: BoxFit.cover);
