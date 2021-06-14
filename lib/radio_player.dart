@@ -46,7 +46,11 @@ class RadioPlayer {
     final byteData = await _metadataArtworkChannel.send(ByteData(0));
     if (byteData == null) return null;
 
-    return Image.memory(byteData.buffer.asUint8List(), fit: BoxFit.cover);
+    return Image.memory(
+      byteData.buffer.asUint8List(),
+      key: UniqueKey(),
+      fit: BoxFit.cover,
+    );
   }
 
   /// Get the playback state stream.
