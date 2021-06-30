@@ -81,7 +81,8 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         // Start service
         intent = Intent(context, RadioPlayerService::class.java)
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        Util.startForegroundService(context, intent)
+        //Util.startForegroundService(context, intent)
+        context.startService(intent)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

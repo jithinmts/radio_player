@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Fix ANR caused by startForegroundService()
+
 ## 0.2.2
 
 * Added UniqueKey() to artwork image
