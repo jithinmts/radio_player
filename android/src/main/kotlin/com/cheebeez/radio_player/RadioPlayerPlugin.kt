@@ -39,8 +39,11 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var stateChannel: EventChannel
     private lateinit var metadataChannel: EventChannel
+    private lateinit var defaultArtworkChannel: BasicMessageChannel<ByteBuffer>
+    private lateinit var metadataArtworkChannel: BasicMessageChannel<ByteBuffer>
     private lateinit var intent: Intent
     private lateinit var service: RadioPlayerService
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -53,7 +56,7 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         metadataChannel.setStreamHandler(metadataStreamHandler)
 
         // Channel for default artwork
-        val defaultArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/setArtwork", BinaryCodec.INSTANCE)
+        defaultArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/setArtwork", BinaryCodec.INSTANCE)
         defaultArtworkChannel.setMessageHandler { message, result -> run {
                 val array = message!!.array();
                 val image = BitmapFactory.decodeByteArray(array, 0, array.size);
@@ -63,7 +66,7 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
         }
 
         // Channel for metadata artwork
-        val metadataArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/getArtwork", BinaryCodec.INSTANCE)
+        metadataArtworkChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "radio_player/getArtwork", BinaryCodec.INSTANCE)
         metadataArtworkChannel.setMessageHandler { message, result -> run {
                 if (service.metadataArtwork == null) {
                     result.reply(null)
@@ -80,13 +83,16 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
 
         // Start service
         intent = Intent(context, RadioPlayerService::class.java)
-        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        //Util.startForegroundService(context, intent)
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT)
         context.startService(intent)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        stateChannel.setStreamHandler(null)
+        metadataChannel.setStreamHandler(null)
+        defaultArtworkChannel.setMessageHandler(null)
+        metadataArtworkChannel.setMessageHandler(null)
         context.unbindService(serviceConnection)
         context.stopService(intent)
     }
