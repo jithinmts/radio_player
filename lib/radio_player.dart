@@ -22,6 +22,7 @@ class RadioPlayer {
 
   /// Configure channel
   Future<void> setMediaItem(String title, String url, [String? image]) async {
+    await Future.delayed(Duration(milliseconds: 500));
     await _methodChannel.invokeMethod('set', [title, url]);
     if (image != null) setDefaultArtwork(image);
   }

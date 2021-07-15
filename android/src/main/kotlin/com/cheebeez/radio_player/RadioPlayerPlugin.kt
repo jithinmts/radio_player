@@ -44,7 +44,6 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var intent: Intent
     private lateinit var service: RadioPlayerService
 
-
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "radio_player")

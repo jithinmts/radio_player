@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Fix Android asynchronous suspension
+
 ## 0.2.3
 
 * Fix ANR caused by startForegroundService()
