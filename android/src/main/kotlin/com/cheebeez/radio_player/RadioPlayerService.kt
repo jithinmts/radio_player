@@ -74,9 +74,10 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         playerNotificationManager?.setPlayer(null)
         player.release()
-        super.onDestroy()
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     fun setMediaItem(streamTitle: String, streamUrl: String) {
@@ -160,7 +161,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                     isForegroundService = true
                 }
             }
-            override fun onNotificationCancelled(notificationId: Int) {
+            override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
                 stopForeground(true)
                 isForegroundService = false
                 stopSelf()
