@@ -12,6 +12,7 @@ class RadioPlayer {
   static const _methodChannel = MethodChannel('radio_player');
   static const _metadataEvents = EventChannel('radio_player/metadataEvents');
   static const _stateEvents = EventChannel('radio_player/stateEvents');
+
   static const _defaultArtworkChannel =
       BasicMessageChannel("radio_player/setArtwork", BinaryCodec());
   static const _metadataArtworkChannel =
@@ -37,21 +38,20 @@ class RadioPlayer {
 
   /// Set default artwork
   Future<void> setDefaultArtwork(String image) async {
-    await rootBundle.load(image).then((value) {
-      _defaultArtworkChannel.send(value);
-    });
+    final byteData = await rootBundle.load(image);
+    _defaultArtworkChannel.send(byteData);
   }
 
   /// Get artwork from metadata
-  Future<Image?> getMetadataArtwork() async {
+  Future<Image?> getArtworkImage() async {
     final byteData = await _metadataArtworkChannel.send(ByteData(0));
-    if (byteData == null) return null;
+    Image? image;
 
-    return Image.memory(
-      byteData.buffer.asUint8List(),
-      key: UniqueKey(),
-      fit: BoxFit.cover,
-    );
+    if (byteData != null)
+      image = Image.memory(byteData.buffer.asUint8List(),
+          key: UniqueKey(), fit: BoxFit.cover);
+
+    return image;
   }
 
   /// Get the playback state stream.

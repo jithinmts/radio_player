@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FutureBuilder(
-                future: _radioPlayer.getMetadataArtwork(),
+                future: _radioPlayer.getArtworkImage(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   Image artwork;
                   if (snapshot.hasData) {
@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
           onPressed: () {
             isPlaying ? _radioPlayer.pause() : _radioPlayer.play();
           },
-          tooltip: 'Increment',
+          tooltip: 'Control button',
           child: Icon(
             isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
           ),
