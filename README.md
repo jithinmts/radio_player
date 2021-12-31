@@ -89,6 +89,10 @@ radioPlayer.metadataStream.listen((value) {
 });
 ```
 
+## Requirements 
+- iOS: SDK 10.0 (or later)
+- Android: API Level 23 (or later)
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
