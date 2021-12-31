@@ -35,15 +35,6 @@ If necessary, add permissions to play in the background:
 </array>
 ```
 
-Only for debug mode in iOS 14+, you will also need the following:
-
-```xml
-<key>NSBonjourServices</key>
-<array>
-<string>_dartobservatory._tcp</string>
-</array>
-```
-
 ## Usage
 
 To create `RadioPlayer` instance, simply call the constructor.
