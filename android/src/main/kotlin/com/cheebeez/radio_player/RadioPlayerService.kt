@@ -195,6 +195,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     override fun onMetadata(metadata: Metadata) {
         val icyInfo: IcyInfo = metadata[0] as IcyInfo
         val title: String = icyInfo.title ?: return
+        if (title.length == 0) return
         val cover: String = icyInfo.url ?: ""
 
         metadataList = title.split(" - ").toMutableList()
