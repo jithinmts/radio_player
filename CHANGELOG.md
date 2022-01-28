@@ -1,3 +1,8 @@
+## 0.2.5
+
+* Added support for custom metadata
+* Fix a bug in zero-length metadata.
+
 ## 0.2.4
 
 * Fix Android asynchronous suspension
