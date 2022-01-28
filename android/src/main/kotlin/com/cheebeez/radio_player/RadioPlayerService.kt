@@ -47,7 +47,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var notificationTitle = ""
     private var isForegroundService = false
-    private var metadataList: MutableList<String>? = null
+    private var currentMetadata: ArrayList<String>? = null
     private var localBinder = LocalBinder()
     private val player: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(this).build()
@@ -87,7 +87,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 }.await() 
             }
 
-        metadataList = null
+        currentMetadata = null
         defaultArtwork = null
         metadataArtwork = null
         notificationTitle = streamTitle
@@ -97,6 +97,15 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         player.clearMediaItems()
         player.seekTo(0)
         player.addMediaItems(mediaItems)
+    }
+
+    fun setMetadata(metadata: ArrayList<String>) {
+        currentMetadata = metadata
+        playerNotificationManager?.invalidate()
+
+        val metadataIntent = Intent(ACTION_NEW_METADATA)
+        metadataIntent.putStringArrayListExtra(ACTION_NEW_METADATA_EXTRA, metadata)
+        localBroadcastManager.sendBroadcast(metadataIntent)
     }
 
     fun setDefaultArtwork(image: Bitmap) {
@@ -142,15 +151,15 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
                 return null
             }
             override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {
-                metadataArtwork = downloadImage(metadataList?.get(2))
+                metadataArtwork = downloadImage(currentMetadata?.get(2))
                 if (metadataArtwork != null) callback?.onBitmap(metadataArtwork!!)
                 return defaultArtwork
             }
             override fun getCurrentContentTitle(player: Player): String {
-                return metadataList?.get(0) ?: notificationTitle
+                return currentMetadata?.get(0) ?: notificationTitle
             }
             override fun getCurrentContentText(player: Player): String? {
-                return metadataList?.get(1) ?: null
+                return currentMetadata?.get(1) ?: null
             }
         }
 
@@ -192,20 +201,17 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         localBroadcastManager.sendBroadcast(stateIntent)
     }
 
-    override fun onMetadata(metadata: Metadata) {
-        val icyInfo: IcyInfo = metadata[0] as IcyInfo
+    override fun onMetadata(md: Metadata) {
+        val icyInfo: IcyInfo = md[0] as IcyInfo
         val title: String = icyInfo.title ?: return
         if (title.length == 0) return
         val cover: String = icyInfo.url ?: ""
 
-        metadataList = title.split(" - ").toMutableList()
-        if (metadataList!!.lastIndex == 0) metadataList!!.add("")
-        metadataList!!.add(cover)
-        playerNotificationManager?.invalidate()
+        var metadata: MutableList<String> = title.split(" - ").toMutableList()
+        if (metadata.lastIndex == 0) metadata.add("")
+        metadata.add(cover)
 
-        val metadataIntent = Intent(ACTION_NEW_METADATA)
-        metadataIntent.putStringArrayListExtra(ACTION_NEW_METADATA_EXTRA, metadataList!! as ArrayList<String>)
-        localBroadcastManager.sendBroadcast(metadataIntent)
+        setMetadata(ArrayList(metadata))
     }
 
     fun downloadImage(value: String?): Bitmap? {

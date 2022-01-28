@@ -46,10 +46,13 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
                 player.play()
             case "pause":
                 player.pause()
+            case "metadata":
+                let metadata = call.arguments as! Array<String>
+                player.setMetadata(metadata)
             default:
                 result(FlutterMethodNotImplemented)
         }
-
+ 
         result(1)
     }
 }

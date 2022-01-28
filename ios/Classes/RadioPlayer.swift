@@ -10,7 +10,6 @@ import AVKit
 class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     private var player: AVPlayer!
     private var playerItem: AVPlayerItem!
-    private var metadata: Array<String>!
     var defaultArtwork: UIImage?
     var metadataArtwork: UIImage?
 
@@ -33,6 +32,19 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
         metaOutput.setDelegate(self, queue: DispatchQueue.main)
         playerItem.add(metaOutput)
+    }
+
+    func setMetadata(_ metadata: Array<String>) {
+        // Update the now playing info
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+                MPMediaItemPropertyArtist: metadata[0], MPMediaItemPropertyTitle: metadata[1], ]
+
+        // Download and set album cover
+        metadataArtwork = downloadImage(metadata[2])
+        setArtwork(metadataArtwork ?? defaultArtwork)
+
+        // Send metadata to client
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "metadata"), object: nil, userInfo: ["metadata": metadata])
     }
 
     func setArtwork(_ image: UIImage?) {
@@ -91,6 +103,7 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
 
     func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup],
                 from track: AVPlayerItemTrack?) {
+        var metadata: Array<String>!
         let metaDataItems = groups.first.map({ $0.items })
 
         // Parse title
@@ -101,15 +114,8 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         // Parse artwork
         metaDataItems!.count > 1 ? metadata.append(metaDataItems![1].stringValue!) : metadata.append("")
 
-        // Update the now playing info
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
-                MPMediaItemPropertyArtist: metadata[0], MPMediaItemPropertyTitle: metadata[1], ]
-
-        metadataArtwork = downloadImage(metadata[2])
-        setArtwork(metadataArtwork ?? defaultArtwork)
-
-        // Send metadata to client
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "metadata"), object: nil, userInfo: ["metadata": metadata!])
+        // Update metadata
+        setMetadata(metadata)
     }
 
     func downloadImage(_ value: String) -> UIImage? {

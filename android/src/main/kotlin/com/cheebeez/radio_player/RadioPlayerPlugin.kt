@@ -108,6 +108,10 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
             "pause" -> {
                 service.pause()
             }
+            "metadata" -> {
+                val metadata = call.arguments<ArrayList<String>>()
+                service.setMetadata(metadata)
+            }
             else -> {
                 result.notImplemented()
             }

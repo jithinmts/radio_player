@@ -36,10 +36,15 @@ class RadioPlayer {
     await _methodChannel.invokeMethod('pause');
   }
 
-  /// Set default artwork
+  /// Set default image
   Future<void> setDefaultArtwork(String image) async {
     final byteData = await rootBundle.load(image);
     _defaultArtworkChannel.send(byteData);
+  }
+
+  /// Set custom metadata
+  Future<void> setCustomMetadata(List<String> metadata) async {
+    await _methodChannel.invokeMethod('metadata', metadata);
   }
 
   /// Get artwork from metadata
