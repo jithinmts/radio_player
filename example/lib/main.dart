@@ -29,8 +29,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initRadioPlayer() {
-    _radioPlayer.setMediaItem('Radio Player',
-        'http://stream-uk1.radioparadise.com/aac-320', 'assets/cover.jpg');
+    _radioPlayer.setChannel(
+      title: 'Radio Player',
+      url: 'http://stream-uk1.radioparadise.com/aac-320',
+      imagePath: 'assets/cover.jpg',
+    );
 
     _radioPlayer.stateStream.listen((value) {
       setState(() {

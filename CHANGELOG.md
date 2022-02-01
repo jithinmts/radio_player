@@ -1,19 +1,24 @@
+## 0.3.0
+
+* Added stop feature.
+* Replaced addMediaItem() with setChannel().
+
 ## 0.2.5
 
-* Added support for custom metadata
+* Added support for custom metadata.
 * Fix a bug in zero-length metadata.
 
 ## 0.2.4
 
-* Fix Android asynchronous suspension
+* Fix Android asynchronous suspension.
 
 ## 0.2.3
 
-* Fix ANR caused by startForegroundService()
+* Fix ANR caused by startForegroundService().
 
 ## 0.2.2
 
-* Added UniqueKey() to artwork image
+* Added UniqueKey() to artwork image.
 
 ## 0.2.1
 

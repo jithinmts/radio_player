@@ -117,6 +117,11 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
         player.playWhenReady = true
     }
 
+    fun stop() {
+        player.setPlayWhenReady(false);
+        player.stop()
+    }
+
     fun pause() {
         player.playWhenReady = false
     }
@@ -191,7 +196,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     }
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-        if (playbackState == Player.STATE_IDLE) {
+        if (playbackState == Player.STATE_IDLE && playWhenReady == true) {
             player.prepare()
         }
 

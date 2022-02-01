@@ -21,15 +21,20 @@ class RadioPlayer {
   Stream<bool>? _stateStream;
   Stream<List<String>>? _metadataStream;
 
-  /// Configure channel
-  Future<void> setMediaItem(String title, String url, [String? image]) async {
+  /// Set new streaming URL
+  Future<void> setChannel(
+      {required String title, required String url, String? imagePath}) async {
     await Future.delayed(Duration(milliseconds: 500));
     await _methodChannel.invokeMethod('set', [title, url]);
-    if (image != null) setDefaultArtwork(image);
+    if (imagePath != null) setDefaultArtwork(imagePath);
   }
 
   Future<void> play() async {
     await _methodChannel.invokeMethod('play');
+  }
+
+  Future<void> stop() async {
+    await _methodChannel.invokeMethod('stop');
   }
 
   Future<void> pause() async {

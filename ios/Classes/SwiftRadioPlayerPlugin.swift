@@ -44,6 +44,8 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
                 player.setMediaItem(args[0], args[1])
             case "play":
                 player.play()
+            case "stop":
+                player.stop()
             case "pause":
                 player.pause()
             case "metadata":

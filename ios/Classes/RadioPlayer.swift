@@ -55,7 +55,13 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     }
 
     func play() {
+        if (player.currentItem == nil) { player.replaceCurrentItem(with: playerItem) }
         player.play()
+    }
+ 
+    func stop() {
+        player.pause()
+        player.replaceCurrentItem(with: nil)
     }
 
     func pause() {

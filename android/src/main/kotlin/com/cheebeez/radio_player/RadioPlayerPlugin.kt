@@ -105,6 +105,9 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
             "play" -> {
                 service.play()
             }
+            "stop" -> {
+                service.stop()
+            }
             "pause" -> {
                 service.pause()
             }
