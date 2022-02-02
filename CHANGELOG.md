@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Small bug fixes
+* Update README.md
+
 ## 0.3.0
 
 * Added stop feature.

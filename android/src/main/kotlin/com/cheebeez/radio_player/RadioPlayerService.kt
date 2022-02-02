@@ -118,7 +118,7 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     }
 
     fun stop() {
-        player.setPlayWhenReady(false);
+        player.playWhenReady = false
         player.stop()
     }
 

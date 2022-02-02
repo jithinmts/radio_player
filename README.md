@@ -53,7 +53,6 @@ radioPlayer.setChannel(title: TITLE, url: URL, imagePath: IMAGEPATH?);
 
 ```dart
 radioPlayer.play();
-radioPlayer.stop();
 radioPlayer.pause();
 ```
 
@@ -80,6 +79,8 @@ radioPlayer.metadataStream.listen((value) {
     setState(() { metadata = value; });
 });
 ```
+
+Image from metadata can be retrieved using `getArtworkImage()`
 
 ## Requirements 
 - iOS: SDK 10.0 (or later)
