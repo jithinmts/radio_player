@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added trimming whitespaces and newlines from metadata in iOS
+
 ## 0.3.1
 
 * Small bug fixes

@@ -34,7 +34,9 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         playerItem.add(metaOutput)
     }
 
-    func setMetadata(_ metadata: Array<String>) {
+    func setMetadata(_ rawMetadata: Array<String>) {
+        let metadata = rawMetadata.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+
         // Update the now playing info
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
                 MPMediaItemPropertyArtist: metadata[0], MPMediaItemPropertyTitle: metadata[1], ]
