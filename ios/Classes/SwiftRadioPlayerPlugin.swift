@@ -62,6 +62,7 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
 /** Handler for playback state changes, passed to setStreamHandler() */
 class StateStreamHandler: NSObject, FlutterStreamHandler {
     private var eventSink: FlutterEventSink?
+    private var previousState: Bool?
 
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         eventSink = events
@@ -76,8 +77,9 @@ class StateStreamHandler: NSObject, FlutterStreamHandler {
 
     // Notification receiver for playback state changes, passed to addObserver()
     @objc private func onRecieve(_ notification: Notification) {
-        if let metadata = notification.userInfo!["state"] {
-            eventSink?(metadata)
+        if let state = notification.userInfo!["state"], previousState != (state as! Bool) {
+            previousState = state as! Bool
+            eventSink?(state)
         }
     }
 }
