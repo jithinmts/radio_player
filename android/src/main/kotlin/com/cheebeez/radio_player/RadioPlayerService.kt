@@ -11,11 +11,10 @@ import java.net.URL
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.app.PendingIntent
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.metadata.Metadata
-import com.google.android.exoplayer2.metadata.MetadataOutput
 import com.google.android.exoplayer2.metadata.icy.IcyInfo
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
@@ -29,9 +28,10 @@ import android.os.IBinder
 import android.os.Binder
 import android.app.Notification
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import android.util.Log
 
 /** Service for plays streaming audio content using ExoPlayer. */
-class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
+class RadioPlayerService : Service(), Player.Listener {
 
     companion object {
         const val NOTIFICATION_CHANNEL_ID = "radio_channel_id"
@@ -49,8 +49,8 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     private var isForegroundService = false
     private var currentMetadata: ArrayList<String>? = null
     private var localBinder = LocalBinder()
-    private val player: SimpleExoPlayer by lazy {
-        SimpleExoPlayer.Builder(this).build()
+    private val player: ExoPlayer by lazy {
+        ExoPlayer.Builder(this).build()
     }
     private val localBroadcastManager: LocalBroadcastManager by lazy {
         LocalBroadcastManager.getInstance(this)
@@ -68,7 +68,6 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         player.setRepeatMode(Player.REPEAT_MODE_ONE)
         player.addListener(this)
-        player.addMetadataOutput(this)
 
         return START_NOT_STICKY
     }
@@ -182,20 +181,27 @@ class RadioPlayerService : Service(), Player.EventListener, MetadataOutput {
             }
         }
 
-        playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
-                this, NOTIFICATION_CHANNEL_ID, R.string.channel_name, NOTIFICATION_ID, 
-                mediaDescriptionAdapter, notificationListener
-                ).apply {
-                    setUsePlayPauseActions(true)
-                    setUseNavigationActionsInCompactView(true)
-                    setUseNavigationActions(false)
-                    setRewindIncrementMs(0)
-                    setFastForwardIncrementMs(0)
-                    setPlayer(player)
-                }
+        playerNotificationManager = PlayerNotificationManager.Builder(
+            this, NOTIFICATION_ID, NOTIFICATION_CHANNEL_ID)
+            .setChannelNameResourceId(R.string.channel_name)
+            //.setChannelDescriptionResourceId(R.string.notification_Channel_Description)
+            .setMediaDescriptionAdapter(mediaDescriptionAdapter)
+            .setNotificationListener(notificationListener)
+            .build().apply {
+                setUsePlayPauseActions(true)
+                setUseFastForwardAction(false)
+                setUseFastForwardActionInCompactView(false)
+                setUseRewindAction(false)
+                setUseRewindActionInCompactView(false)
+                setUsePreviousActionInCompactView(false)
+                setUseNextActionInCompactView(false)
+                setUsePreviousAction(false)
+                setUseNextAction(false)
+                setPlayer(player)
+            }
     }
 
-    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_IDLE && playWhenReady == true) {
             player.prepare()
         }
