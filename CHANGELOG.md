@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Update exoplayer to 2.17.1
+
 ## 0.3.3
 
 * Fix state flooding in iOS
