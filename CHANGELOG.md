@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Update gradle
+
 ## 0.4.0
 
 * Update exoplayer to 2.17.1
