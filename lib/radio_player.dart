@@ -21,11 +21,12 @@ class RadioPlayer {
   Stream<bool>? _stateStream;
   Stream<List<String>>? _metadataStream;
 
-  /// Set new streaming URL
+  /// Set new streaming URL.
   Future<void> setChannel(
       {required String title, required String url, String? imagePath}) async {
     await Future.delayed(Duration(milliseconds: 500));
     await _methodChannel.invokeMethod('set', [title, url]);
+
     if (imagePath != null) setDefaultArtwork(imagePath);
   }
 
@@ -41,18 +42,23 @@ class RadioPlayer {
     await _methodChannel.invokeMethod('pause');
   }
 
-  /// Set default image
+  /// Set default image.
   Future<void> setDefaultArtwork(String image) async {
     final byteData = await rootBundle.load(image);
     _defaultArtworkChannel.send(byteData);
   }
 
-  /// Set custom metadata
+  /// Helps avoid conflicts with custom metadata.
+  Future<void> ignoreIcyMetadata() async {
+    await _methodChannel.invokeMethod('ignore_icy');
+  }
+
+  /// Set custom metadata.
   Future<void> setCustomMetadata(List<String> metadata) async {
     await _methodChannel.invokeMethod('metadata', metadata);
   }
 
-  /// Get artwork from metadata
+  /// Returns the album cover if it has already been downloaded.
   Future<Image?> getArtworkImage() async {
     final byteData = await _metadataArtworkChannel.send(ByteData(0));
     Image? image;

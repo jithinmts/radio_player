@@ -115,6 +115,9 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
                 val metadata = call.arguments<ArrayList<String>>()
                 service.setMetadata(metadata)
             }
+            "ignore_icy" -> {
+                service.ignoreIcy = true
+            }
             else -> {
                 result.notImplemented()
             }

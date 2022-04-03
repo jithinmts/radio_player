@@ -12,6 +12,7 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
     private var playerItem: AVPlayerItem!
     var defaultArtwork: UIImage?
     var metadataArtwork: UIImage?
+    var ignoreIcy: Bool = false
 
     func setMediaItem(_ streamTitle: String, _ streamUrl: String) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: streamTitle, ]
@@ -111,6 +112,8 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
 
     func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup],
                 from track: AVPlayerItemTrack?) {
+        if (ignoreIcy) { return }
+
         var metadata: Array<String>!
         let metaDataItems = groups.first.map({ $0.items })
 
@@ -140,7 +143,7 @@ class RadioPlayer: NSObject, AVPlayerItemMetadataOutputPushDelegate {
         }
         task.resume()
 
-        semaphore.wait(timeout: .distantFuture)
+        let _ = semaphore.wait(timeout: .distantFuture)
         return result
     }
 }

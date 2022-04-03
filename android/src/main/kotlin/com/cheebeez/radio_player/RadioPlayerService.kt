@@ -43,6 +43,7 @@ class RadioPlayerService : Service(), Player.Listener {
     }
 
     var metadataArtwork: Bitmap? = null
+    var ignoreIcy: Boolean = false
     private var defaultArtwork: Bitmap? = null
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var notificationTitle = ""
@@ -213,6 +214,8 @@ class RadioPlayerService : Service(), Player.Listener {
     }
 
     override fun onMetadata(md: Metadata) {
+        if (ignoreIcy) return
+
         val icyInfo: IcyInfo = md[0] as IcyInfo
         val title: String = icyInfo.title ?: return
         if (title.length == 0) return

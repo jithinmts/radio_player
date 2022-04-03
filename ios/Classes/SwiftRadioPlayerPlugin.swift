@@ -51,6 +51,8 @@ public class SwiftRadioPlayerPlugin: NSObject, FlutterPlugin {
             case "metadata":
                 let metadata = call.arguments as! Array<String>
                 player.setMetadata(metadata)
+            case "ignore_icy":
+                player.ignoreIcy = true
             default:
                 result(FlutterMethodNotImplemented)
         }
@@ -78,7 +80,7 @@ class StateStreamHandler: NSObject, FlutterStreamHandler {
     // Notification receiver for playback state changes, passed to addObserver()
     @objc private func onRecieve(_ notification: Notification) {
         if let state = notification.userInfo!["state"], previousState != (state as! Bool) {
-            previousState = state as! Bool
+            previousState = state as? Bool
             eventSink?(state)
         }
     }
