@@ -99,7 +99,7 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "set" -> {
-                val args = call.arguments<ArrayList<String>>()
+                val args = call.arguments<ArrayList<String>>()!!
                 service.setMediaItem(args[0], args[1])
             }
             "play" -> {
@@ -112,7 +112,7 @@ class RadioPlayerPlugin : FlutterPlugin, MethodCallHandler {
                 service.pause()
             }
             "metadata" -> {
-                val metadata = call.arguments<ArrayList<String>>()
+                val metadata = call.arguments<ArrayList<String>>()!!
                 service.setMetadata(metadata)
             }
             "ignore_icy" -> {
